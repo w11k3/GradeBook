@@ -1,13 +1,13 @@
 ﻿public class GradeBook
 {
-    private int[] grades; // array of student grades
+    private int[,] grades; // array of student grades
 
     // auto-implemented property CourseName
     public string CourseName { get; set; }
 
     // two-parameter constructor initializes
     // auto-implemented property CourseName and grades array
-    public GradeBook(string name, int[] gradesArray)
+    public GradeBook(string name, int[,] gradesArray)
     {
         CourseName = name; // set CourseName to name
         grades = gradesArray;
@@ -28,10 +28,9 @@
         OutputGrades();
 
         // call method GetAverage to calculate the average grade
-        Console.WriteLine("\nClass average is {0:F}", GetAverage());
-    
-        // call methods GetMinimum and GetMaximum
-        Console.WriteLine("Lowest grade is {0}\nHighest grade is {1}\n", GetMinimum(), GetMaximum());
+        Console.WriteLine("\n{0} {1}\n{2} {3}\n",
+            "Lowest grade in the grade book is", GetMinimum(),
+            "Highest grade in the grade book is", GetMaximum());
     
         // call OutputBarChart to display grade distribution chart
         OutputBarChart();
@@ -41,7 +40,7 @@
     // find minimum grade
     public int GetMinimum()
     {
-        int lowGrade = grades[0]; // assume grades[ 0 ] is smallest
+        int lowGrade = grades[0 , 0]; // assume grades[ 0 ] is smallest
 
         // loop through grades array
         foreach (int grade in grades)
@@ -57,7 +56,7 @@
     // find maximum grade
     public int GetMaximum()
     {
-        int highGrade = grades[0]; // assume grades[ 0 ] is largest
+        int highGrade = grades[0 , 0]; // assume grades[ 0 ] is largest
         // loop through grades array
         foreach (int grade in grades )
         {
@@ -70,16 +69,16 @@
     } // end method GetMaximum
 
     // determine average grade for test
-    public double GetAverage()
+    public double GetAverage( int student)
     {
+        int amount = grades.GetLength(1);
         int total = 0; // initialize total
 
-        // sum grades for one student
-        foreach (int grade in grades)
-            total += grade;
+        for (int exam = 0; exam < amount; ++exam)
+            total += grades[student, exam];
 
         // return average of grades
-        return (double)total / grades.Length;
+        return (double)total / amount;
     } // end method GetAverage
     // output bar chart displaying grade distribution
     public void OutputBarChart()
@@ -88,6 +87,7 @@
     
         // stores frequency of grades in each range of 10 grades
         int[] frequency = new int[11];
+
         // for each grade, increment the appropriate frequency
         foreach (int grade in grades)
             ++frequency[grade / 10];
@@ -114,8 +114,23 @@
     public void OutputGrades()
     {
         Console.WriteLine( "The grades are:\n" );
+        Console.Write("                ");
+
         // output each student's grade
-        for (int student = 0; student < grades.Length; ++student)
-            Console.WriteLine("Student {0,2}: {1,3}", student + 1, grades[student]);
+        for (int test = 0; test < grades.GetLength(1); ++test)
+            Console.Write("Test {0} ", test + 1);
+
+        Console.WriteLine("Average");
+
+        for(int student = 0; student < grades.GetLength(0); ++student)
+        {
+            Console.Write("Student {0,2}", student + 1);
+
+            for (int grade = 0; grade < grades.GetLength(1); ++grade)
+                Console.Write("{0,8}", grades[student, grade]);
+
+            Console.WriteLine("{0,9:F}", GetAverage(student));
+
+        }
     } // end method OutputGrades
 } // end class GradeBook
